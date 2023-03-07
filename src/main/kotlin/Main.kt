@@ -1,5 +1,9 @@
 import org.redisson.Redisson
+import org.redisson.client.codec.Codec
+import org.redisson.codec.Kryo5Codec
 import org.redisson.config.Config
+import java.util.BitSet
+import java.util.concurrent.TimeUnit
 import kotlin.system.exitProcess
 
 fun main() {
@@ -10,23 +14,12 @@ fun main() {
         }
     )
 
-    val follow = client.getSet<String>("follow")
+    val tempCache = client.getMapCache<String, String>("map:test")
+    tempCache.put("test1", "hello", 1, TimeUnit.MINUTES)
 
-    // Make sure it is in clean state
-    follow.clear()
-
-    follow.addAll(listOf(
-        "123456789:123456789",
-        "123456789:987654321",
-        "987654321:123456789",
-        "987654321:987654321",
-        "1234567890:1234567890",
-        "1234567890:9876543210",
-        "9876543210:1234567890",
-        "9876543210:9876543210",
-    ))
-
-    println(follow.count { it.startsWith("123456789") }) // Expect: 4
+    // should be -2, -1 or ttl
+    // but cannot serialize error (maybe the script not returning Long?)
+    println(tempCache.remainTimeToLive("test1"))
 
     client.shutdown()
     exitProcess(0)

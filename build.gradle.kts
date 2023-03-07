@@ -2,7 +2,7 @@ group = "net.eve0415"
 version = "debug"
 
 plugins {
-    kotlin("jvm") version "1.7.21"
+    kotlin("jvm") version "1.8.10"
     application
 }
 
@@ -11,7 +11,7 @@ repositories {
 }
 
 dependencies {
-    implementation("org.redisson:redisson:3.18.0")
+    implementation("org.redisson:redisson:3.20.0")
 }
 
 application {
